@@ -18,10 +18,11 @@ use ApiFootball\Resource\Trophies;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\UriFactoryInterface;
+use Psr\Log\LoggerInterface;
 
 /**
- * Entry point. Exposes one getter per resource — `countries()` is the only one so far; every later resource
- * from docs/design/endpoint-catalog.md just adds another getter here, reusing the same Transport.
+ * Entry point. Exposes one getter per resource, each reusing the same Transport underneath (see
+ * docs/design/endpoint-catalog.md for the full MVP resource list).
  */
 final readonly class Client
 {
@@ -33,9 +34,10 @@ final readonly class Client
         ?ClientInterface $httpClient = null,
         ?RequestFactoryInterface $requestFactory = null,
         ?UriFactoryInterface $uriFactory = null,
+        ?LoggerInterface $logger = null,
     ) {
         $this->transport = new Transport(
-            new Config($apiKey, $baseUri, $httpClient, $requestFactory, $uriFactory),
+            new Config($apiKey, $baseUri, $httpClient, $requestFactory, $uriFactory, $logger),
         );
     }
 

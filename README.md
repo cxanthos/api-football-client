@@ -78,6 +78,9 @@ internal design notes (not published in this repo).
 - **No invented requirements** — a parameter is only enforced client-side when the live API spec or docs
   text actually says it's required; everything else passes through as-is and lets the API's own response
   speak for itself
+- **Optional PSR-3 logging** — off by default; pass a logger and get requests, API-level errors, and
+  rate-limit warnings for free on every call (see [USAGE.md](USAGE.md#logging-optional)). The API key is a
+  header, never logged, by construction — not by careful omission
 
 ## Development
 

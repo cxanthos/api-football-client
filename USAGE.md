@@ -156,6 +156,24 @@ new ThrottlingClient(
 It never retries. A `429` (or any other status) passes straight through unchanged — this only ever delays
 *before* sending a request, never reacts to one that already failed.
 
+## Logging (optional)
+
+Off by default — pass a PSR-3 logger and every call logs for free, with no changes needed to any resource
+call:
+
+```php
+$client = new ApiFootball\Client(apiKey: '...', logger: $myPsr3Logger);
+```
+
+| Level | When |
+|---|---|
+| `debug` | Every outgoing request (method + URI, never headers) and every successful response (endpoint + result count) |
+| `warning` | API-level errors (HTTP 200 with a populated `errors` field), daily quota ≤ 10 remaining, per-minute limit exhausted |
+| `error` | Transport/HTTP failures, right before the `TransportException` is thrown |
+
+The API key is sent as a header (`x-apisports-key`), never as part of the URL — so it can never end up in
+a log line by construction, not by careful omission. No other request/response headers are logged either.
+
 ## Account
 
 ```php
