@@ -101,6 +101,18 @@ php8.5 vendor/bin/phpunit
 php8.5 vendor/bin/phpstan analyse
 ```
 
+## Versioning
+
+Not yet at `1.0.0` — treat every `0.x` release as pre-release. Once `1.0.0` ships, this follows standard
+[Semantic Versioning](https://semver.org/) and only major versions may break compatibility. Until then:
+
+- **Never considered breaking** (safe in a patch or minor release): adding a new resource, method, DTO
+  property, or query parameter; widening what a method accepts.
+- **Considered breaking**, and will be called out in [CHANGELOG.md](CHANGELOG.md): removing or renaming a
+  public method or DTO property, changing a DTO property's type, or changing what a method requires.
+
+Read the changelog before upgrading a minor version while still on `0.x`.
+
 ## License
 
 MIT — see [LICENSE](LICENSE).
