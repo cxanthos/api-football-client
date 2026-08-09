@@ -24,6 +24,12 @@ if ($result->isOk()) {
 }
 ```
 
+`errors()` is always a flat `array<string,string>` regardless of what the API actually sent back — the raw
+shape varies (confirmed against the live API): an invalid key comes back as
+`['token' => 'Invalid API key, please check your request and credentials.', 'error' => '4xSe']`, a bad
+parameter as `['season' => 'The Season field must be at least 4 characters in length.']`. Don't assume a
+specific key exists (like `'message'`) — iterate the map or check for the one key you're expecting.
+
 Rate-limit standing from the most recent call is always available, regardless of the result:
 
 ```php
