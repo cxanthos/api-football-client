@@ -1,0 +1,9 @@
+/AGENTS.md
+/CLAUDE.md
+/.claude/
+/docs/
+/vendor/
+composer.lock
+.phpunit.cache/
+.phpunit.result.cache
+.php-cs-fixer.cache
