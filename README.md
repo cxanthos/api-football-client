@@ -70,8 +70,9 @@ internal design notes (not published in this repo).
 - **PSR-18 + PSR-17** via `php-http/discovery` — no hard dependency on Guzzle or any specific HTTP client
 - **Honest error model**: transport/HTTP failures throw (`Exception\TransportException`); API-level errors
   (HTTP 200 with a populated `errors` field) return a `Result`-style outcome instead of throwing
-- **Rate limits always exposed** via `Client::rateLimit()`; throttling is strictly **opt-in** (not built yet),
-  and a `429` is never auto-retried
+- **Rate limits always exposed** via `Client::rateLimit()`; throttling is strictly **opt-in** via
+  `Http\ThrottlingClient` (see [USAGE.md](USAGE.md#throttling-opt-in)), and a `429` is never auto-retried
+  under any configuration
 - **Manual, opt-in coverage checks** — `leagues()->coverage()` is a plain, explicit call; no resource method
   silently calls `/leagues` first to guard itself, which would double the cost of every call it protects
 - **No invented requirements** — a parameter is only enforced client-side when the live API spec or docs

@@ -125,6 +125,37 @@ $client->transfers()->list(player: 276);
 $client->trophies()->list(player: 276);
 ```
 
+## Throttling (opt-in)
+
+Nothing throttles by default. If you want it, wrap your own PSR-18 client with `ThrottlingClient` and pass
+the result as `Client`'s `$httpClient`:
+
+```php
+use ApiFootball\Http\ThrottlingClient;
+use Http\Discovery\Psr18ClientDiscovery;
+
+$client = new ApiFootball\Client(
+    apiKey: '...',
+    httpClient: new ThrottlingClient(Psr18ClientDiscovery::find()),
+);
+```
+
+It respects the per-minute limit (learned from the `X-RateLimit-Limit` response header — nothing is
+hardcoded, so it adapts to whatever plan you're on) and, once the daily quota drops to 50 remaining or
+fewer by default, adds a small extra delay after each call to spread out what's left of the day. Both
+thresholds are constructor parameters if the defaults don't fit:
+
+```php
+new ThrottlingClient(
+    inner: $myPsr18Client,
+    lowDailyRemainingThreshold: 200,
+    lowDailyRemainingDelaySeconds: 3.0,
+);
+```
+
+It never retries. A `429` (or any other status) passes straight through unchanged — this only ever delays
+*before* sending a request, never reacts to one that already failed.
+
 ## Account
 
 ```php
