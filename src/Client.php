@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace ApiFootball;
 
 use ApiFootball\Http\Transport;
+use ApiFootball\Resource\Account;
 use ApiFootball\Resource\Coachs;
 use ApiFootball\Resource\Countries;
 use ApiFootball\Resource\Fixtures;
@@ -81,6 +82,11 @@ final readonly class Client
     public function trophies(): Trophies
     {
         return new Trophies($this->transport);
+    }
+
+    public function account(): Account
+    {
+        return new Account($this->transport);
     }
 
     /**
