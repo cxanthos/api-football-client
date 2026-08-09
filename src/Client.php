@@ -12,6 +12,8 @@ use ApiFootball\Resource\Leagues;
 use ApiFootball\Resource\Players;
 use ApiFootball\Resource\Standings;
 use ApiFootball\Resource\Teams;
+use ApiFootball\Resource\Transfers;
+use ApiFootball\Resource\Trophies;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\UriFactoryInterface;
@@ -69,6 +71,16 @@ final readonly class Client
     public function coachs(): Coachs
     {
         return new Coachs($this->transport);
+    }
+
+    public function transfers(): Transfers
+    {
+        return new Transfers($this->transport);
+    }
+
+    public function trophies(): Trophies
+    {
+        return new Trophies($this->transport);
     }
 
     /**
