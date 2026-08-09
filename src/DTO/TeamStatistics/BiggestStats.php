@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace ApiFootball\DTO\TeamStatistics;
 
+use ApiFootball\DTO\HomeAwayPair;
 use ApiFootball\Internal\Scalars;
 
 final readonly class BiggestStats

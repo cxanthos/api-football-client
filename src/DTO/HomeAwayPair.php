@@ -2,11 +2,14 @@
 
 declare(strict_types=1);
 
-namespace ApiFootball\DTO\TeamStatistics;
+namespace ApiFootball\DTO;
 
 use ApiFootball\Internal\Scalars;
 
-/** A bare home/away pair with no `total` field — used for `biggest.goals.for`/`against`. */
+/**
+ * A bare home/away pair with no `total` field. Reused across team-statistics (`biggest.goals.for`/`against`)
+ * and fixtures (`goals`, each `score.*` split).
+ */
 final readonly class HomeAwayPair
 {
     public function __construct(

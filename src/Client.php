@@ -6,6 +6,7 @@ namespace ApiFootball;
 
 use ApiFootball\Http\Transport;
 use ApiFootball\Resource\Countries;
+use ApiFootball\Resource\Fixtures;
 use ApiFootball\Resource\Leagues;
 use ApiFootball\Resource\Teams;
 use Psr\Http\Client\ClientInterface;
@@ -45,6 +46,11 @@ final readonly class Client
     public function teams(): Teams
     {
         return new Teams($this->transport);
+    }
+
+    public function fixtures(): Fixtures
+    {
+        return new Fixtures($this->transport);
     }
 
     /**
