@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace ApiFootball\Resource;
 
 use ApiFootball\DTO\Country;
+use ApiFootball\Internal\Scalars;
 use ApiFootball\Result;
 
 /**
@@ -30,9 +31,11 @@ final readonly class Countries extends AbstractResource
             return Result::err($envelope->errors);
         }
 
-        /** @var list<array<string,mixed>> $items */
-        $items = is_array($envelope->response) ? $envelope->response : [];
+        $items = Scalars::toArray($envelope->response);
 
-        return Result::ok(array_values(array_map(Country::fromArray(...), $items)));
+        return Result::ok(array_values(array_map(
+            static fn(mixed $item): Country => Country::fromArray(Scalars::toMap($item)),
+            $items,
+        )));
     }
 }
