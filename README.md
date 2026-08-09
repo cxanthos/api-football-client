@@ -7,10 +7,8 @@ A typed PHP SDK for [API-Football v3](https://www.api-football.com/documentation
 client with fully typed DTOs, PSR-18/17 HTTP transport, and no hidden magic (no built-in caching, retries, or
 auto-throttling).
 
-**Status: active development, pre-release.** No tagged version yet. Substrate (transport, envelope
-decoding, error model, rate-limit parsing) is implemented, along with the first resource (`countries()`) as
-the reference pattern for the rest. 18 more MVP resources are planned — see the coverage table below for
-what's live vs. still on the list.
+**Status: MVP feature-complete, pre-release.** No tagged version yet. All 19 MVP resources below are
+implemented and tested against both PHP 8.4 and 8.5.
 
 ## Requirements
 
@@ -41,43 +39,57 @@ if ($result->isOk()) {
 }
 ```
 
-Everything else below is the **planned** shape once the corresponding resource exists — not yet callable:
+Every resource follows the same shape:
 
 ```php
 $client->leagues()->list(country: 'england');
-$client->fixtures()->events(fixture: 239625);
-$client->players()->topScorers(league: 39, season: 2023);
+$client->leagues()->coverage(id: 39, season: 2023)->unwrap()->supports('top_assists');
 $client->teams()->statistics(league: 39, season: 2023, team: 33);
+$client->fixtures()->events(fixture: 239625);
+$client->fixtures()->headToHead(h2h: '33-34');
+$client->standings()->list(season: 2023, league: 39);
+$client->players()->topScorers(league: 39, season: 2023);
+$client->players()->squads(team: 33);
+$client->coachs()->list(team: 85);
+$client->transfers()->list(player: 276);
+$client->trophies()->list(player: 276);
+$client->account()->status(); // free — doesn't count against your daily quota
 ```
 
 ## MVP endpoint coverage
 
-| Resource | Covers | Status |
+| Resource | Methods | Status |
 |---|---|---|
-| Countries | Reference data | ✅ Implemented |
-| Leagues | Season coverage flags | Planned |
-| Teams | Identity + embedded venue, season statistics | Planned |
-| Fixtures | Match results, goals/cards/subs (events), head-to-head history | Planned |
-| Standings | League tables | Planned |
-| Players | Player+season stats, squads, top scorers/assists/yellow/red cards | Planned |
-| Coaches, Transfers, Trophies | Manager careers, transfer history, honours | Planned |
-| Account | Free quota check (`/status`), doesn't count against your daily limit | Planned |
+| Countries | `list()` | ✅ Implemented |
+| Leagues | `list()`, `seasons()`, `coverage()` | ✅ Implemented |
+| Teams | `list()`, `statistics()` | ✅ Implemented |
+| Fixtures | `list()`, `events()`, `headToHead()` | ✅ Implemented |
+| Standings | `list()` | ✅ Implemented |
+| Players | `statistics()`, `squads()`, `topScorers()`, `topAssists()`, `topYellowCards()`, `topRedCards()` | ✅ Implemented |
+| Coachs | `list()` | ✅ Implemented |
+| Transfers | `list()` | ✅ Implemented |
+| Trophies | `list()` | ✅ Implemented |
+| Account | `status()` — free quota check, doesn't count against your daily limit | ✅ Implemented |
 
 Deliberately **not** in scope: betting odds, match predictions, live-availability data (injuries/sidelined),
-ETL/sync tooling, question-generation logic, caching, and built-in retries. Full rationale for what's in,
-deferred, or excluded lives in the project's internal design notes (not published in this repo).
+`/fixtures/lineups`/`statistics`/`players`/`rounds`, `/venues`, ETL/sync tooling, question-generation logic,
+caching, and built-in retries. Full rationale for what's in, deferred, or excluded lives in the project's
+internal design notes (not published in this repo).
 
 ## Design principles
 
 - **Resource-oriented API** matching API-Football's own vocabulary (`fixtures()`, `players()`, `standings()`, …)
-- **Fully typed, readonly DTOs** — no `array`/`stdClass` payloads for MVP endpoints
+- **Fully typed, readonly DTOs** down to the leaf level — no `array`/`stdClass` payloads
 - **PSR-18 + PSR-17** via `php-http/discovery` — no hard dependency on Guzzle or any specific HTTP client
 - **Honest error model**: transport/HTTP failures throw (`Exception\TransportException`); API-level errors
   (HTTP 200 with a populated `errors` field) return a `Result`-style outcome instead of throwing
-- **Rate limits always exposed** via `Client::rateLimit()`, throttling is strictly **opt-in** (not built yet),
+- **Rate limits always exposed** via `Client::rateLimit()`; throttling is strictly **opt-in** (not built yet),
   and a `429` is never auto-retried
-- **Manual, opt-in coverage checks** (planned, once `Leagues` exists) — no resource method silently calls
-  `/leagues` first to guard itself; that would double the cost of every call it protects
+- **Manual, opt-in coverage checks** — `leagues()->coverage()` is a plain, explicit call; no resource method
+  silently calls `/leagues` first to guard itself, which would double the cost of every call it protects
+- **No invented requirements** — a parameter is only enforced client-side when the live API spec or docs
+  text actually says it's required; everything else passes through as-is and lets the API's own response
+  speak for itself
 
 ## Development
 
