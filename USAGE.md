@@ -130,6 +130,17 @@ $topScorers = $client->players()->topScorers(league: 39, season: 2023)->unwrap()
 the whole SDK that's enforced without being schema-required, because the API's own docs say so explicitly.
 `statistics()` is paginated (`page` param) with no auto-pagination helper — you own the loop and the quota.
 
+Tier 2 additions:
+
+```php
+$profiles = $client->players()->profiles(player: 276)->unwrap();  // DTO\ProfiledPlayer — has number/position, no injured
+$years = $client->players()->seasons(player: 276)->unwrap();       // list<int>
+$career = $client->players()->teams(player: 276)->unwrap();        // "which clubs has X played for", by season
+```
+
+`profiles()` returns a genuinely different player shape from `statistics()`/`topScorers()` etc. — don't
+assume the fields line up.
+
 ## Coachs
 
 ```php

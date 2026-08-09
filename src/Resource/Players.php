@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace ApiFootball\Resource;
 
 use ApiFootball\DTO\PlayerStatistics;
+use ApiFootball\DTO\PlayerTeamSeasons;
+use ApiFootball\DTO\ProfiledPlayer;
 use ApiFootball\DTO\Squad;
 use ApiFootball\Internal\Scalars;
 use ApiFootball\Result;
@@ -12,7 +14,8 @@ use InvalidArgumentException;
 
 /**
  * `GET /players`, `GET /players/squads`, `GET /players/topscorers`, `GET /players/topassists`,
- * `GET /players/topyellowcards`, `GET /players/topredcards`. See docs/design/endpoint-catalog.md.
+ * `GET /players/topyellowcards`, `GET /players/topredcards` (MVP), plus `GET /players/profiles`,
+ * `GET /players/seasons`, `GET /players/teams` (Tier 2). See docs/design/endpoint-catalog.md.
  */
 final readonly class Players extends AbstractResource
 {
@@ -112,6 +115,78 @@ final readonly class Players extends AbstractResource
     public function topRedCards(int $league, int $season): Result
     {
         return $this->fetchPlayerStatisticsList('/players/topredcards', ['league' => $league, 'season' => $season]);
+    }
+
+    /**
+     * A genuinely different player shape from `statistics()`/`topScorers()` etc. — see `DTO\ProfiledPlayer`.
+     * Paginated (`page`), same as `statistics()`.
+     *
+     * @return Result<list<ProfiledPlayer>>
+     */
+    public function profiles(?int $player = null, ?string $search = null, ?int $page = null): Result
+    {
+        $query = array_filter([
+            'player' => $player,
+            'search' => $search,
+            'page' => $page,
+        ], static fn(mixed $value): bool => $value !== null);
+
+        $envelope = $this->transport->get('/players/profiles', $query);
+
+        if ($envelope->hasErrors()) {
+            return Result::err($envelope->errors);
+        }
+
+        $items = Scalars::toArray($envelope->response);
+
+        return Result::ok(array_values(array_map(
+            static fn(mixed $item): ProfiledPlayer => ProfiledPlayer::fromArray(Scalars::toMap($item)),
+            $items,
+        )));
+    }
+
+    /**
+     * @return Result<list<int>>
+     */
+    public function seasons(?int $player = null): Result
+    {
+        $query = array_filter([
+            'player' => $player,
+        ], static fn(mixed $value): bool => $value !== null);
+
+        $envelope = $this->transport->get('/players/seasons', $query);
+
+        if ($envelope->hasErrors()) {
+            return Result::err($envelope->errors);
+        }
+
+        $items = Scalars::toArray($envelope->response);
+
+        return Result::ok(array_values(array_map(
+            static fn(mixed $year): int => Scalars::toInt($year),
+            $items,
+        )));
+    }
+
+    /**
+     * Career path: every club the player has belonged to, with which seasons there.
+     *
+     * @return Result<list<PlayerTeamSeasons>>
+     */
+    public function teams(int $player): Result
+    {
+        $envelope = $this->transport->get('/players/teams', ['player' => $player]);
+
+        if ($envelope->hasErrors()) {
+            return Result::err($envelope->errors);
+        }
+
+        $items = Scalars::toArray($envelope->response);
+
+        return Result::ok(array_values(array_map(
+            static fn(mixed $item): PlayerTeamSeasons => PlayerTeamSeasons::fromArray(Scalars::toMap($item)),
+            $items,
+        )));
     }
 
     /**

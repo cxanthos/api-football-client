@@ -182,4 +182,71 @@ final class PlayersTest extends ResourceTestCase
 
         $client->players()->statistics(id: 276);
     }
+
+    public function testProfilesReturnsTheDistinctProfileShapeOnSuccess(): void
+    {
+        // Lifted verbatim from the live OpenAPI spec's own `/players/profiles` example (Neymar) — note
+        // this shape has number/position but no injured, unlike statistics()'s player block.
+        $client = $this->clientWithResponse($this->envelopeJson([
+            'get' => 'players/profiles',
+            'results' => 1,
+            'response' => [
+                [
+                    'player' => [
+                        'id' => 276, 'name' => 'Neymar', 'firstname' => 'Neymar', 'lastname' => 'da Silva Santos Júnior',
+                        'age' => 32, 'birth' => ['date' => '1992-02-05', 'place' => 'Mogi das Cruzes', 'country' => 'Brazil'],
+                        'nationality' => 'Brazil', 'height' => '175 cm', 'weight' => '68 kg',
+                        'number' => 10, 'position' => 'Attacker',
+                        'photo' => 'https://media.api-sports.io/football/players/276.png',
+                    ],
+                ],
+            ],
+        ]));
+
+        $result = $client->players()->profiles(player: 276);
+
+        self::assertTrue($result->isOk());
+        $profile = $result->unwrap()[0];
+        self::assertSame('Neymar', $profile->name);
+        self::assertSame(10, $profile->number);
+        self::assertSame('Attacker', $profile->position);
+        self::assertSame('Brazil', $profile->birth->country);
+    }
+
+    public function testSeasonsReturnsFlatYearList(): void
+    {
+        $client = $this->clientWithResponse($this->envelopeJson([
+            'get' => 'players/seasons',
+            'results' => 2,
+            'response' => [1966, 2020],
+        ]));
+
+        $result = $client->players()->seasons(player: 276);
+
+        self::assertTrue($result->isOk());
+        self::assertSame([1966, 2020], $result->unwrap());
+    }
+
+    public function testTeamsReturnsCareerPathOnSuccess(): void
+    {
+        // Lifted verbatim from the live OpenAPI spec's own `/players/teams` example (Brazil NT), trimmed
+        // to two seasons.
+        $client = $this->clientWithResponse($this->envelopeJson([
+            'get' => 'players/teams',
+            'results' => 1,
+            'response' => [
+                [
+                    'team' => ['id' => 6, 'name' => 'Brazil', 'logo' => 'https://media.api-sports.io/football/teams/6.png'],
+                    'seasons' => [2023, 2022],
+                ],
+            ],
+        ]));
+
+        $result = $client->players()->teams(player: 276);
+
+        self::assertTrue($result->isOk());
+        $entry = $result->unwrap()[0];
+        self::assertSame('Brazil', $entry->team->name);
+        self::assertSame([2023, 2022], $entry->seasons);
+    }
 }
