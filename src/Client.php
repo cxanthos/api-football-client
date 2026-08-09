@@ -8,6 +8,7 @@ use ApiFootball\Http\Transport;
 use ApiFootball\Resource\Countries;
 use ApiFootball\Resource\Fixtures;
 use ApiFootball\Resource\Leagues;
+use ApiFootball\Resource\Players;
 use ApiFootball\Resource\Standings;
 use ApiFootball\Resource\Teams;
 use Psr\Http\Client\ClientInterface;
@@ -57,6 +58,11 @@ final readonly class Client
     public function standings(): Standings
     {
         return new Standings($this->transport);
+    }
+
+    public function players(): Players
+    {
+        return new Players($this->transport);
     }
 
     /**
