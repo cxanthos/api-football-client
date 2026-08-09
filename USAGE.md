@@ -59,6 +59,8 @@ if ($coverage->supports('top_assists')) {
 ```php
 $teams = $client->teams()->list(league: 39, season: 2023)->unwrap();
 $stats = $client->teams()->statistics(league: 39, season: 2023, team: 33)->unwrap();
+$years = $client->teams()->seasons(team: 33)->unwrap();       // list<int>
+$countries = $client->teams()->countries()->unwrap();          // list<DTO\Country> — same shape as countries()
 ```
 
 `statistics()`'s three parameters are all required by the API itself (schema-enforced) — the method

@@ -133,6 +133,37 @@ final class TeamsTest extends ResourceTestCase
         self::assertNull($stats->cards->red['0-15']->total);
     }
 
+    public function testSeasonsReturnsFlatYearList(): void
+    {
+        $client = $this->clientWithResponse($this->envelopeJson([
+            'get' => 'teams/seasons',
+            'results' => 2,
+            'response' => [2010, 2011],
+        ]));
+
+        $result = $client->teams()->seasons(team: 33);
+
+        self::assertTrue($result->isOk());
+        self::assertSame([2010, 2011], $result->unwrap());
+    }
+
+    public function testCountriesReturnsMappedCountriesOnSuccess(): void
+    {
+        // Same {name, code, flag} shape as /countries itself — lifted verbatim from the live spec example.
+        $client = $this->clientWithResponse($this->envelopeJson([
+            'get' => 'teams/countries',
+            'results' => 1,
+            'response' => [
+                ['name' => 'England', 'code' => 'GB', 'flag' => 'https://media.api-sports.io/flags/gb.svg'],
+            ],
+        ]));
+
+        $result = $client->teams()->countries();
+
+        self::assertTrue($result->isOk());
+        self::assertSame('England', $result->unwrap()[0]->name);
+    }
+
     public function testListReturnsErrResultWhenApiReturnsErrorsOnHttp200(): void
     {
         $client = $this->clientWithResponse($this->envelopeJson([

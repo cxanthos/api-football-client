@@ -4,13 +4,16 @@ declare(strict_types=1);
 
 namespace ApiFootball\Resource;
 
+use ApiFootball\DTO\Country;
 use ApiFootball\DTO\Team;
 use ApiFootball\DTO\TeamStatistics;
 use ApiFootball\Internal\Scalars;
 use ApiFootball\Result;
 
 /**
- * `GET /teams`, `GET /teams/statistics`. See docs/design/endpoint-catalog.md.
+ * `GET /teams`, `GET /teams/statistics`, `GET /teams/seasons`, `GET /teams/countries`. See
+ * docs/design/endpoint-catalog.md. The latter two are Tier 2 (sync/lookup helpers, no direct trivia
+ * value) — included for completeness once you're already reaching for the `Teams` resource.
  */
 final readonly class Teams extends AbstractResource
 {
@@ -75,5 +78,46 @@ final readonly class Teams extends AbstractResource
         }
 
         return Result::ok(TeamStatistics::fromArray(Scalars::toMap($envelope->response)));
+    }
+
+    /**
+     * @return Result<list<int>>
+     */
+    public function seasons(int $team): Result
+    {
+        $envelope = $this->transport->get('/teams/seasons', ['team' => $team]);
+
+        if ($envelope->hasErrors()) {
+            return Result::err($envelope->errors);
+        }
+
+        $items = Scalars::toArray($envelope->response);
+
+        return Result::ok(array_values(array_map(
+            static fn(mixed $year): int => Scalars::toInt($year),
+            $items,
+        )));
+    }
+
+    /**
+     * Same `{name, code, flag}` shape as `GET /countries` itself, so it reuses the `Country` DTO rather
+     * than duplicating it.
+     *
+     * @return Result<list<Country>>
+     */
+    public function countries(): Result
+    {
+        $envelope = $this->transport->get('/teams/countries');
+
+        if ($envelope->hasErrors()) {
+            return Result::err($envelope->errors);
+        }
+
+        $items = Scalars::toArray($envelope->response);
+
+        return Result::ok(array_values(array_map(
+            static fn(mixed $item): Country => Country::fromArray(Scalars::toMap($item)),
+            $items,
+        )));
     }
 }
