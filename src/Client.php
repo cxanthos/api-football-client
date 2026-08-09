@@ -15,6 +15,7 @@ use ApiFootball\Resource\Standings;
 use ApiFootball\Resource\Teams;
 use ApiFootball\Resource\Transfers;
 use ApiFootball\Resource\Trophies;
+use ApiFootball\Resource\Venues;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\UriFactoryInterface;
@@ -89,6 +90,11 @@ final readonly class Client
     public function account(): Account
     {
         return new Account($this->transport);
+    }
+
+    public function venues(): Venues
+    {
+        return new Venues($this->transport);
     }
 
     /**

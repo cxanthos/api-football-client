@@ -66,6 +66,15 @@ $countries = $client->teams()->countries()->unwrap();          // list<DTO\Count
 `statistics()`'s three parameters are all required by the API itself (schema-enforced) — the method
 signature has no defaults for them.
 
+## Venues
+
+```php
+$client->venues()->list(city: 'Manchester');
+```
+
+A dedicated resource (Tier 2) on top of `/teams`' embedded venue — adds `country` and search by
+city/country/name directly. Shares the same `DTO\Venue` class as `teams()->list()`'s embedded venue.
+
 ## Fixtures
 
 ```php
