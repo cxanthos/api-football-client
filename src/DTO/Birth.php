@@ -2,10 +2,11 @@
 
 declare(strict_types=1);
 
-namespace ApiFootball\DTO\PlayerStatistics;
+namespace ApiFootball\DTO;
 
 use ApiFootball\Internal\Scalars;
 
+/** Shared `{date, place, country}` shape — used by `PlayerProfile` and `Coach`. */
 final readonly class Birth
 {
     public function __construct(

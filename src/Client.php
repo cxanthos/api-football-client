@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace ApiFootball;
 
 use ApiFootball\Http\Transport;
+use ApiFootball\Resource\Coachs;
 use ApiFootball\Resource\Countries;
 use ApiFootball\Resource\Fixtures;
 use ApiFootball\Resource\Leagues;
@@ -63,6 +64,11 @@ final readonly class Client
     public function players(): Players
     {
         return new Players($this->transport);
+    }
+
+    public function coachs(): Coachs
+    {
+        return new Coachs($this->transport);
     }
 
     /**

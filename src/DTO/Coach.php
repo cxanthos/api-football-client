@@ -7,12 +7,14 @@ namespace ApiFootball\DTO;
 use ApiFootball\Internal\Scalars;
 
 /**
- * The `player` block shared by `/players`, `/players/topscorers`, `/players/topassists`,
- * `/players/topyellowcards`, `/players/topredcards` — distinct from `PlayerRef`, the bare `{id, name}`
- * reference used in fixture events.
+ * `GET /coachs` response item. `team` is nullable — a coach between jobs may have none
+ * (docs/design/endpoint-catalog.md).
  */
-final readonly class PlayerProfile
+final readonly class Coach
 {
+    /**
+     * @param list<CoachCareerEntry> $career
+     */
     public function __construct(
         public int $id,
         public string $name,
@@ -23,8 +25,9 @@ final readonly class PlayerProfile
         public ?string $nationality,
         public ?string $height,
         public ?string $weight,
-        public bool $injured,
         public ?string $photo,
+        public ?TeamRef $team,
+        public array $career,
     ) {}
 
     /**
@@ -32,6 +35,9 @@ final readonly class PlayerProfile
      */
     public static function fromArray(array $data): self
     {
+        $career = Scalars::toArray($data['career'] ?? null);
+        $team = Scalars::toMap($data['team'] ?? null);
+
         return new self(
             id: Scalars::toInt($data['id'] ?? null),
             name: Scalars::toString($data['name'] ?? null),
@@ -42,8 +48,12 @@ final readonly class PlayerProfile
             nationality: Scalars::toStringOrNull($data['nationality'] ?? null),
             height: Scalars::toStringOrNull($data['height'] ?? null),
             weight: Scalars::toStringOrNull($data['weight'] ?? null),
-            injured: Scalars::toBool($data['injured'] ?? false),
             photo: Scalars::toStringOrNull($data['photo'] ?? null),
+            team: $team === [] ? null : TeamRef::fromArray($team),
+            career: array_values(array_map(
+                static fn(mixed $entry): CoachCareerEntry => CoachCareerEntry::fromArray(Scalars::toMap($entry)),
+                $career,
+            )),
         );
     }
 }
