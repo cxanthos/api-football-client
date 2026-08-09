@@ -89,6 +89,20 @@ $fixture->fixture->status->raw;   // the raw short code either way — never thr
 
 `list()` has no enforced parameters — pass whatever filters you need (`league`+`season`, `date`, `team`, ...).
 
+Tier 2 additions — richer, but per-match cost like `events()`:
+
+```php
+$rounds = $client->fixtures()->rounds(league: 39, season: 2023)->unwrap();     // list<string>
+$lineups = $client->fixtures()->lineups(fixture: 239625)->unwrap();
+$stats = $client->fixtures()->statistics(fixture: 239625)->unwrap();
+$players = $client->fixtures()->players(fixture: 239625)->unwrap();            // richest, most expensive
+```
+
+`rounds()` is only verified for the default shape (no `dates` param) — passing `dates: true` is documented
+to change the response shape, which hasn't been observed, so it isn't specially handled.
+`statistics()`'s `StatItem::$value` stays `int|string|null` exactly as the API sends it (counts are ints,
+things like possession are percentage strings, untracked stats are null) — nothing is coerced.
+
 ## Standings
 
 ```php

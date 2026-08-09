@@ -165,4 +165,142 @@ final class FixturesTest extends ResourceTestCase
 
         $client->fixtures()->list();
     }
+
+    public function testRoundsReturnsFlatRoundNameList(): void
+    {
+        // Lifted verbatim from the live OpenAPI spec's own `/fixtures/rounds` example.
+        $client = $this->clientWithResponse($this->envelopeJson([
+            'get' => 'fixtures/rounds',
+            'results' => 1,
+            'response' => ['Regular Season - 1'],
+        ]));
+
+        $result = $client->fixtures()->rounds(league: 39, season: 2023);
+
+        self::assertTrue($result->isOk());
+        self::assertSame(['Regular Season - 1'], $result->unwrap());
+    }
+
+    public function testLineupsReturnsFullyMappedTreeOnSuccess(): void
+    {
+        // Lifted verbatim from the live OpenAPI spec's own `/fixtures/lineups` example (Manchester City),
+        // trimmed to two starters and two substitutes.
+        $client = $this->clientWithResponse($this->envelopeJson([
+            'get' => 'fixtures/lineups',
+            'results' => 1,
+            'response' => [
+                [
+                    'team' => [
+                        'id' => 50, 'name' => 'Manchester City', 'logo' => 'https://media.api-sports.io/football/teams/50.png',
+                        'colors' => [
+                            'player' => ['primary' => '5badff', 'number' => 'ffffff', 'border' => '99ff99'],
+                            'goalkeeper' => ['primary' => '99ff99', 'number' => '000000', 'border' => '99ff99'],
+                        ],
+                    ],
+                    'formation' => '4-3-3',
+                    'startXI' => [
+                        ['player' => ['id' => 617, 'name' => 'Ederson', 'number' => 31, 'pos' => 'G', 'grid' => '1:1']],
+                        ['player' => ['id' => 627, 'name' => 'Kyle Walker', 'number' => 2, 'pos' => 'D', 'grid' => '2:4']],
+                    ],
+                    'substitutes' => [
+                        ['player' => ['id' => 50828, 'name' => 'Zack Steffen', 'number' => 13, 'pos' => 'G', 'grid' => null]],
+                        ['player' => ['id' => 623, 'name' => 'Benjamin Mendy', 'number' => 22, 'pos' => 'D', 'grid' => null]],
+                    ],
+                    'coach' => ['id' => 4, 'name' => 'Guardiola', 'photo' => 'https://media.api-sports.io/football/coachs/4.png'],
+                ],
+            ],
+        ]));
+
+        $result = $client->fixtures()->lineups(fixture: 592872);
+
+        self::assertTrue($result->isOk());
+        $lineup = $result->unwrap()[0];
+        self::assertSame('Manchester City', $lineup->team->name);
+        self::assertSame('5badff', $lineup->team->colors->player->primary);
+        self::assertSame('4-3-3', $lineup->formation);
+        self::assertCount(2, $lineup->startXI);
+        self::assertSame('Ederson', $lineup->startXI[0]->player->name);
+        self::assertSame('1:1', $lineup->startXI[0]->player->grid);
+        self::assertNull($lineup->substitutes[0]->player->grid);
+        self::assertSame('Guardiola', $lineup->coach->name);
+    }
+
+    public function testStatisticsReturnsMappedStatItemsOnSuccess(): void
+    {
+        // Lifted verbatim from the live OpenAPI spec's own `/fixtures/statistics` example (Aldosivi),
+        // trimmed to three stat lines covering all three value shapes (int, percentage string, null).
+        $client = $this->clientWithResponse($this->envelopeJson([
+            'get' => 'fixtures/statistics',
+            'results' => 1,
+            'response' => [
+                [
+                    'team' => ['id' => 463, 'name' => 'Aldosivi', 'logo' => 'https://media.api-sports.io/football/teams/463.png'],
+                    'statistics' => [
+                        ['type' => 'Total Shots', 'value' => 9],
+                        ['type' => 'Ball Possession', 'value' => '32%'],
+                        ['type' => 'Goalkeeper Saves', 'value' => null],
+                    ],
+                ],
+            ],
+        ]));
+
+        $result = $client->fixtures()->statistics(fixture: 157201);
+
+        self::assertTrue($result->isOk());
+        $teamStats = $result->unwrap()[0];
+        self::assertSame('Aldosivi', $teamStats->team->name);
+        self::assertSame(9, $teamStats->statistics[0]->value);
+        self::assertSame('32%', $teamStats->statistics[1]->value);
+        self::assertNull($teamStats->statistics[2]->value);
+    }
+
+    public function testPlayersReturnsFullyMappedTreeOnSuccess(): void
+    {
+        // Lifted verbatim from the live OpenAPI spec's own `/fixtures/players` example (Monarcas).
+        $client = $this->clientWithResponse($this->envelopeJson([
+            'get' => 'fixtures/players',
+            'results' => 1,
+            'response' => [
+                [
+                    'team' => ['id' => 2284, 'name' => 'Monarcas', 'logo' => 'https://media.api-sports.io/football/teams/2284.png', 'update' => '2020-01-13T16:12:12+00:00'],
+                    'players' => [
+                        [
+                            'player' => ['id' => 35931, 'name' => 'Sebastián Sosa', 'photo' => 'https://media.api-sports.io/football/players/35931.png'],
+                            'statistics' => [
+                                [
+                                    'games' => ['minutes' => 90, 'number' => 13, 'position' => 'G', 'rating' => '6.3', 'captain' => false, 'substitute' => false],
+                                    'offsides' => null,
+                                    'shots' => ['total' => 0, 'on' => 0],
+                                    'goals' => ['total' => null, 'conceded' => 1, 'assists' => null, 'saves' => 0],
+                                    'passes' => ['total' => 17, 'key' => 0, 'accuracy' => '68%'],
+                                    'tackles' => ['total' => null, 'blocks' => 0, 'interceptions' => 0],
+                                    'duels' => ['total' => null, 'won' => null],
+                                    'dribbles' => ['attempts' => 0, 'success' => 0, 'past' => null],
+                                    'fouls' => ['drawn' => 0, 'committed' => 0],
+                                    'cards' => ['yellow' => 0, 'red' => 0],
+                                    'penalty' => ['won' => null, 'commited' => null, 'scored' => 0, 'missed' => 0, 'saved' => 0],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ]));
+
+        $result = $client->fixtures()->players(fixture: 592872);
+
+        self::assertTrue($result->isOk());
+        $teamPlayers = $result->unwrap()[0];
+        self::assertSame('Monarcas', $teamPlayers->team->name);
+        self::assertSame('2020-01-13T16:12:12+00:00', $teamPlayers->updatedAt);
+
+        $entry = $teamPlayers->players[0];
+        self::assertSame('Sebastián Sosa', $entry->player->name);
+        $stats = $entry->statistics[0];
+        self::assertSame(90, $stats->games->minutes);
+        self::assertFalse($stats->games->substitute);
+        self::assertSame('68%', $stats->passes->accuracy);
+        self::assertSame(1, $stats->goals->conceded);
+        self::assertSame(0, $stats->cards->yellow);
+    }
 }
