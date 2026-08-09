@@ -39,22 +39,9 @@ if ($result->isOk()) {
 }
 ```
 
-Every resource follows the same shape:
-
-```php
-$client->leagues()->list(country: 'england');
-$client->leagues()->coverage(id: 39, season: 2023)->unwrap()->supports('top_assists');
-$client->teams()->statistics(league: 39, season: 2023, team: 33);
-$client->fixtures()->events(fixture: 239625);
-$client->fixtures()->headToHead(h2h: '33-34');
-$client->standings()->list(season: 2023, league: 39);
-$client->players()->topScorers(league: 39, season: 2023);
-$client->players()->squads(team: 33);
-$client->coachs()->list(team: 85);
-$client->transfers()->list(player: 276);
-$client->trophies()->list(player: 276);
-$client->account()->status(); // free — doesn't count against your daily quota
-```
+See **[USAGE.md](USAGE.md)** for a worked example of every resource, plus the handful of behaviors worth
+knowing about (which parameters are actually enforced and why, the `standings()` footgun, pagination on
+`players()->statistics()`, etc.).
 
 ## MVP endpoint coverage
 
