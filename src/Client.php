@@ -8,6 +8,7 @@ use ApiFootball\Http\Transport;
 use ApiFootball\Resource\Countries;
 use ApiFootball\Resource\Fixtures;
 use ApiFootball\Resource\Leagues;
+use ApiFootball\Resource\Standings;
 use ApiFootball\Resource\Teams;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
@@ -51,6 +52,11 @@ final readonly class Client
     public function fixtures(): Fixtures
     {
         return new Fixtures($this->transport);
+    }
+
+    public function standings(): Standings
+    {
+        return new Standings($this->transport);
     }
 
     /**
