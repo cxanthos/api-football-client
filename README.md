@@ -60,9 +60,8 @@ knowing about (which parameters are actually enforced and why, the `standings()`
 | Account | Free quota check (`/status`), doesn't count against your daily limit |
 
 Deliberately **not** in scope, and not planned: betting odds, match predictions, live-availability data
-(injuries/sidelined), ETL/sync tooling, question-generation logic, caching, and built-in retries. Full
-rationale for what's in or excluded lives in the project's internal design notes (not published in this
-repo).
+(injuries/sidelined), ETL/sync tooling, caching, and built-in retries. Full rationale for what's in or
+excluded lives in the project's internal design notes (not published in this repo).
 
 ## Design principles
 
