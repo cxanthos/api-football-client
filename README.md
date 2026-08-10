@@ -7,8 +7,9 @@ A typed PHP SDK for [API-Football v3](https://www.api-football.com/documentation
 client with fully typed DTOs, PSR-18/17 HTTP transport, and no hidden magic (no built-in caching, retries, or
 auto-throttling).
 
-**Status: MVP feature-complete, pre-release.** No tagged version yet. All 19 MVP resources below are
-implemented and tested against both PHP 8.4 and 8.5.
+**Status:** [`v0.1.0`](https://github.com/cxanthos/api-football-client/releases/tag/v0.1.0) — all 19 MVP
+endpoints plus everything originally deferred to "Tier 2" are implemented and tested against both PHP 8.4
+and 8.5. Still `0.x`: see [Versioning](#versioning) before depending on this for anything serious.
 
 ## Requirements
 
@@ -19,8 +20,6 @@ implemented and tested against both PHP 8.4 and 8.5.
 ```bash
 composer require cxanthos/api-football-client
 ```
-
-*(Not published to Packagist yet — this will work once the first tag is cut.)*
 
 ## Usage
 
@@ -43,25 +42,27 @@ See **[USAGE.md](USAGE.md)** for a worked example of every resource, plus the ha
 knowing about (which parameters are actually enforced and why, the `standings()` footgun, pagination on
 `players()->statistics()`, etc.).
 
-## MVP endpoint coverage
+## Endpoint coverage
 
-| Resource | Methods | Status |
-|---|---|---|
-| Countries | `list()` | ✅ Implemented |
-| Leagues | `list()`, `seasons()`, `coverage()` | ✅ Implemented |
-| Teams | `list()`, `statistics()` | ✅ Implemented |
-| Fixtures | `list()`, `events()`, `headToHead()` | ✅ Implemented |
-| Standings | `list()` | ✅ Implemented |
-| Players | `statistics()`, `squads()`, `topScorers()`, `topAssists()`, `topYellowCards()`, `topRedCards()` | ✅ Implemented |
-| Coachs | `list()` | ✅ Implemented |
-| Transfers | `list()` | ✅ Implemented |
-| Trophies | `list()` | ✅ Implemented |
-| Account | `status()` — free quota check, doesn't count against your daily limit | ✅ Implemented |
+29 of the API's ~39 total paths — every MVP endpoint plus everything originally deferred to "Tier 2." See
+**[USAGE.md](USAGE.md)** for the exact method list with examples; summary by resource:
 
-Deliberately **not** in scope: betting odds, match predictions, live-availability data (injuries/sidelined),
-`/fixtures/lineups`/`statistics`/`players`/`rounds`, `/venues`, ETL/sync tooling, question-generation logic,
-caching, and built-in retries. Full rationale for what's in, deferred, or excluded lives in the project's
-internal design notes (not published in this repo).
+| Resource | Covers |
+|---|---|
+| Countries | Reference data |
+| Leagues | List, seasons, coverage flags |
+| Teams | Identity + embedded venue, season statistics, seasons list, countries list |
+| Venues | Dedicated venue search (id/name/city/country) |
+| Fixtures | Results, events, head-to-head, rounds, lineups, match statistics, per-player match stats |
+| Standings | League tables |
+| Players | Season stats, squads, top scorers/assists/yellow/red cards, profiles, seasons, career path |
+| Coaches, Transfers, Trophies | Manager careers, transfer history, honours |
+| Account | Free quota check (`/status`), doesn't count against your daily limit |
+
+Deliberately **not** in scope, and not planned: betting odds, match predictions, live-availability data
+(injuries/sidelined), ETL/sync tooling, question-generation logic, caching, and built-in retries. Full
+rationale for what's in or excluded lives in the project's internal design notes (not published in this
+repo).
 
 ## Design principles
 

@@ -6,7 +6,11 @@ this project applies semantic versioning before `1.0.0`.
 
 ## [Unreleased]
 
-Not yet tagged. Current state:
+Nothing yet.
+
+## [0.1.0] - 2026-08-09
+
+Initial release.
 
 ### Added
 - `Client` with resource-oriented methods for `countries()`, `leagues()`, `teams()`, `venues()`,
@@ -22,4 +26,5 @@ Not yet tagged. Current state:
 - Optional PSR-3 logging, wired centrally in `Http\Transport` — off by default, never logs the API key.
 - PSR-18/17 HTTP transport via `php-http/discovery` — no hard dependency on any specific HTTP client.
 
-[Unreleased]: https://github.com/cxanthos/api-football-client/commits/main
+[Unreleased]: https://github.com/cxanthos/api-football-client/compare/v0.1.0...main
+[0.1.0]: https://github.com/cxanthos/api-football-client/releases/tag/v0.1.0
