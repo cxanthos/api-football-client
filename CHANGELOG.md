@@ -6,6 +6,10 @@ this project applies semantic versioning before `1.0.0`.
 
 ## [Unreleased]
 
+Nothing yet.
+
+## [0.2.0] - 2026-08-14
+
 ### Added
 - `Result::errorId()`, returning `?ErrorId` — currently just `ErrorId::RateLimited`, set when a `Result`
   came from an HTTP 429 response. Lets callers detect rate-limiting directly instead of inferring it from
@@ -34,5 +38,6 @@ Initial release.
 - Optional PSR-3 logging, wired centrally in `Http\Transport` — off by default, never logs the API key.
 - PSR-18/17 HTTP transport via `php-http/discovery` — no hard dependency on any specific HTTP client.
 
-[Unreleased]: https://github.com/cxanthos/api-football-client/compare/v0.1.0...main
+[Unreleased]: https://github.com/cxanthos/api-football-client/compare/v0.2.0...main
+[0.2.0]: https://github.com/cxanthos/api-football-client/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/cxanthos/api-football-client/releases/tag/v0.1.0
