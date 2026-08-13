@@ -6,7 +6,15 @@ this project applies semantic versioning before `1.0.0`.
 
 ## [Unreleased]
 
-Nothing yet.
+### Added
+- `Result::errorId()`, returning `?ErrorId` — currently just `ErrorId::RateLimited`, set when a `Result`
+  came from an HTTP 429 response. Lets callers detect rate-limiting directly instead of inferring it from
+  `Client::rateLimit()` after the fact. Deliberately narrow: other API-level errors (bad params, auth) aren't
+  reliably classifiable from status code on this API, so `errorId()` stays `null` for those — use `errors()`.
+
+### Documentation
+- Clarified that `leagues()->list()`'s `name` param is an exact match and `search` is partial/fuzzy — this
+  wasn't documented anywhere and caused a silent empty-result footgun for a first-time caller.
 
 ## [0.1.0] - 2026-08-09
 

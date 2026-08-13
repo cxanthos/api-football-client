@@ -72,7 +72,8 @@ excluded lives in the project's internal design notes (not published in this rep
   (HTTP 200 with a populated `errors` field) return a `Result`-style outcome instead of throwing
 - **Rate limits always exposed** via `Client::rateLimit()`; throttling is strictly **opt-in** via
   `Http\ThrottlingClient` (see [USAGE.md](USAGE.md#throttling-opt-in)), and a `429` is never auto-retried
-  under any configuration
+  under any configuration. `Result::errorId()` also tells you directly when a `Result` came from a `429`
+  (`ErrorId::RateLimited`), rather than requiring you to infer it from `rateLimit()` after the fact
 - **Manual, opt-in coverage checks** — `leagues()->coverage()` is a plain, explicit call; no resource method
   silently calls `/leagues` first to guard itself, which would double the cost of every call it protects
 - **No invented requirements** — a parameter is only enforced client-side when the live API spec or docs

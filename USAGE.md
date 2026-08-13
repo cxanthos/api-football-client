@@ -30,6 +30,19 @@ shape varies (confirmed against the live API): an invalid key comes back as
 parameter as `['season' => 'The Season field must be at least 4 characters in length.']`. Don't assume a
 specific key exists (like `'message'`) — iterate the map or check for the one key you're expecting.
 
+`errorId()` gives you one SDK-classified category on top of `errors()`, when a reliable signal exists —
+today that's just `ErrorId::RateLimited`, set whenever the response came back HTTP 429:
+
+```php
+if ($result->errorId() === ApiFootball\ErrorId::RateLimited) {
+    // back off — this is a rate-limit response, not a bad-parameter error
+}
+```
+
+It's deliberately narrow: most API-level errors (bad params, auth failures) can't be reliably classified
+from status code alone — this API sometimes returns HTTP 200 for those too — so `errorId()` is `null` for
+anything it can't classify with confidence. Use `errors()` for the rest.
+
 Rate-limit standing from the most recent call is always available, regardless of the result:
 
 ```php
@@ -59,6 +72,10 @@ if ($coverage->supports('top_assists')) {
 ```
 
 `coverage()` is a plain, explicit, separately-billed call — nothing else in the SDK invokes it for you.
+
+`list()`'s `name` param is an **exact match** against the API's own league name — `name: 'Champions League'`
+with any wording off gets an empty result, not an error. Use `search` instead for partial/fuzzy matching
+(e.g. `search: 'champions'`).
 
 ## Teams
 

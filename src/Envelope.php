@@ -31,13 +31,14 @@ final readonly class Envelope
         public int $results,
         public ?Paging $paging,
         public mixed $response,
+        public ?ErrorId $errorId,
     ) {}
 
     /**
      * @throws JsonException if the body isn't valid JSON — that's a transport-layer concern, not an
      *     API-level one, so it's allowed to throw rather than degrade gracefully.
      */
-    public static function fromJson(string $json): self
+    public static function fromJson(string $json, ?ErrorId $errorId = null): self
     {
         /** @var array<string,mixed> $decoded */
         $decoded = json_decode($json, associative: true, flags: JSON_THROW_ON_ERROR);
@@ -57,6 +58,7 @@ final readonly class Envelope
             results: Scalars::toInt($decoded['results'] ?? 0),
             paging: $paging,
             response: $decoded['response'] ?? null,
+            errorId: $errorId,
         );
     }
 

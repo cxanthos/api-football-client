@@ -23,7 +23,7 @@ final readonly class Account extends AbstractResource
         $envelope = $this->transport->get('/status');
 
         if ($envelope->hasErrors()) {
-            return Result::err($envelope->errors);
+            return Result::err($envelope->errors, $envelope->errorId);
         }
 
         return Result::ok(Status::fromArray(Scalars::toMap($envelope->response)));

@@ -6,6 +6,7 @@ namespace ApiFootball\Http;
 
 use ApiFootball\Config;
 use ApiFootball\Envelope;
+use ApiFootball\ErrorId;
 use ApiFootball\Exception\TransportException;
 use ApiFootball\RateLimit;
 use JsonException;
@@ -75,8 +76,13 @@ final class Transport
         $this->lastRateLimit = RateLimit::fromHeaders($response);
         $this->logRateLimitWarningsIfLow();
 
+        // 429 is the one status this API uses reliably for its documented meaning (see ErrorId) — every
+        // other status is not trustworthy for classification (docs/design/sdk-design.md §1), so nothing
+        // else is derived from it here.
+        $errorId = $response->getStatusCode() === 429 ? ErrorId::RateLimited : null;
+
         try {
-            $envelope = Envelope::fromJson((string) $response->getBody());
+            $envelope = Envelope::fromJson((string) $response->getBody(), $errorId);
         } catch (JsonException $exception) {
             $this->config->logger?->error('API-Football returned a non-JSON response body', [
                 'uri' => (string) $uri,

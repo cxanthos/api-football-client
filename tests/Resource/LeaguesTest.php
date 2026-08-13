@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace ApiFootball\Tests\Resource;
 
+use ApiFootball\ErrorId;
 use ApiFootball\Exception\TransportException;
 use ApiFootball\Tests\ResourceTestCase;
 
@@ -140,5 +141,34 @@ final class LeaguesTest extends ResourceTestCase
         $this->expectException(TransportException::class);
 
         $client->leagues()->list();
+    }
+
+    public function testListResultCarriesRateLimitedErrorIdOnHttp429(): void
+    {
+        $client = $this->clientWithResponse(
+            $this->envelopeJson([
+                'get' => 'leagues',
+                'errors' => ['rateLimit' => 'Too many requests'],
+            ]),
+            status: 429,
+        );
+
+        $result = $client->leagues()->list();
+
+        self::assertFalse($result->isOk());
+        self::assertSame(ErrorId::RateLimited, $result->errorId());
+    }
+
+    public function testListResultHasNoErrorIdForOrdinaryApiLevelErrors(): void
+    {
+        $client = $this->clientWithResponse($this->envelopeJson([
+            'get' => 'leagues',
+            'errors' => ['season' => 'The season field must be 4 characters.'],
+        ]));
+
+        $result = $client->leagues()->list(season: 19);
+
+        self::assertFalse($result->isOk());
+        self::assertNull($result->errorId());
     }
 }

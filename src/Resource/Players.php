@@ -68,7 +68,7 @@ final readonly class Players extends AbstractResource
         $envelope = $this->transport->get('/players/squads', $query);
 
         if ($envelope->hasErrors()) {
-            return Result::err($envelope->errors);
+            return Result::err($envelope->errors, $envelope->errorId);
         }
 
         $items = Scalars::toArray($envelope->response);
@@ -134,7 +134,7 @@ final readonly class Players extends AbstractResource
         $envelope = $this->transport->get('/players/profiles', $query);
 
         if ($envelope->hasErrors()) {
-            return Result::err($envelope->errors);
+            return Result::err($envelope->errors, $envelope->errorId);
         }
 
         $items = Scalars::toArray($envelope->response);
@@ -157,7 +157,7 @@ final readonly class Players extends AbstractResource
         $envelope = $this->transport->get('/players/seasons', $query);
 
         if ($envelope->hasErrors()) {
-            return Result::err($envelope->errors);
+            return Result::err($envelope->errors, $envelope->errorId);
         }
 
         $items = Scalars::toArray($envelope->response);
@@ -178,7 +178,7 @@ final readonly class Players extends AbstractResource
         $envelope = $this->transport->get('/players/teams', ['player' => $player]);
 
         if ($envelope->hasErrors()) {
-            return Result::err($envelope->errors);
+            return Result::err($envelope->errors, $envelope->errorId);
         }
 
         $items = Scalars::toArray($envelope->response);
@@ -199,7 +199,7 @@ final readonly class Players extends AbstractResource
         $envelope = $this->transport->get($path, $query);
 
         if ($envelope->hasErrors()) {
-            return Result::err($envelope->errors);
+            return Result::err($envelope->errors, $envelope->errorId);
         }
 
         $items = Scalars::toArray($envelope->response);

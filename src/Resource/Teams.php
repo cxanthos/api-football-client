@@ -44,7 +44,7 @@ final readonly class Teams extends AbstractResource
         $envelope = $this->transport->get('/teams', $query);
 
         if ($envelope->hasErrors()) {
-            return Result::err($envelope->errors);
+            return Result::err($envelope->errors, $envelope->errorId);
         }
 
         $items = Scalars::toArray($envelope->response);
@@ -74,7 +74,7 @@ final readonly class Teams extends AbstractResource
         $envelope = $this->transport->get('/teams/statistics', $query);
 
         if ($envelope->hasErrors()) {
-            return Result::err($envelope->errors);
+            return Result::err($envelope->errors, $envelope->errorId);
         }
 
         return Result::ok(TeamStatistics::fromArray(Scalars::toMap($envelope->response)));
@@ -88,7 +88,7 @@ final readonly class Teams extends AbstractResource
         $envelope = $this->transport->get('/teams/seasons', ['team' => $team]);
 
         if ($envelope->hasErrors()) {
-            return Result::err($envelope->errors);
+            return Result::err($envelope->errors, $envelope->errorId);
         }
 
         $items = Scalars::toArray($envelope->response);
@@ -110,7 +110,7 @@ final readonly class Teams extends AbstractResource
         $envelope = $this->transport->get('/teams/countries');
 
         if ($envelope->hasErrors()) {
-            return Result::err($envelope->errors);
+            return Result::err($envelope->errors, $envelope->errorId);
         }
 
         $items = Scalars::toArray($envelope->response);

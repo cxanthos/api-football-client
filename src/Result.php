@@ -27,6 +27,7 @@ final readonly class Result
         private bool $ok,
         private mixed $value,
         private array $errors,
+        private ?ErrorId $errorId = null,
     ) {}
 
     /**
@@ -44,10 +45,10 @@ final readonly class Result
      * @param array<string,string> $errors
      * @return self<never>
      */
-    public static function err(array $errors): self
+    public static function err(array $errors, ?ErrorId $errorId = null): self
     {
         /** @var self<never> */
-        return new self(false, null, $errors);
+        return new self(false, null, $errors, $errorId);
     }
 
     public function isOk(): bool
@@ -76,5 +77,14 @@ final readonly class Result
     public function errors(): array
     {
         return $this->errors;
+    }
+
+    /**
+     * SDK-classified error category, when one applies — see ErrorId. `null` on success, and also `null`
+     * on error results the SDK doesn't (yet) reliably classify; check `errors()` for those.
+     */
+    public function errorId(): ?ErrorId
+    {
+        return $this->errorId;
     }
 }

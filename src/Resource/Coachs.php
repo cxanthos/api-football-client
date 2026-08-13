@@ -28,7 +28,7 @@ final readonly class Coachs extends AbstractResource
         $envelope = $this->transport->get('/coachs', $query);
 
         if ($envelope->hasErrors()) {
-            return Result::err($envelope->errors);
+            return Result::err($envelope->errors, $envelope->errorId);
         }
 
         $items = Scalars::toArray($envelope->response);

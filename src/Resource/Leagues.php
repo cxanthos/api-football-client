@@ -18,6 +18,9 @@ use ApiFootball\Result;
 final readonly class Leagues extends AbstractResource
 {
     /**
+     * @param string|null $name Exact match only — pass the league's full name as API-Football has it, or
+     *     you'll get an empty (not an error) result. Use $search for partial/fuzzy matching instead.
+     * @param string|null $search Partial match — prefer this over $name for user-typed queries.
      * @return Result<list<League>>
      */
     public function list(
@@ -48,7 +51,7 @@ final readonly class Leagues extends AbstractResource
         $envelope = $this->transport->get('/leagues', $query);
 
         if ($envelope->hasErrors()) {
-            return Result::err($envelope->errors);
+            return Result::err($envelope->errors, $envelope->errorId);
         }
 
         $items = Scalars::toArray($envelope->response);
@@ -67,7 +70,7 @@ final readonly class Leagues extends AbstractResource
         $envelope = $this->transport->get('/leagues/seasons');
 
         if ($envelope->hasErrors()) {
-            return Result::err($envelope->errors);
+            return Result::err($envelope->errors, $envelope->errorId);
         }
 
         $items = Scalars::toArray($envelope->response);
@@ -86,7 +89,7 @@ final readonly class Leagues extends AbstractResource
         $envelope = $this->transport->get('/leagues', ['id' => $id, 'season' => $season]);
 
         if ($envelope->hasErrors()) {
-            return Result::err($envelope->errors);
+            return Result::err($envelope->errors, $envelope->errorId);
         }
 
         $items = Scalars::toArray($envelope->response);

@@ -79,7 +79,7 @@ final readonly class Fixtures extends AbstractResource
         $envelope = $this->transport->get('/fixtures/events', $query);
 
         if ($envelope->hasErrors()) {
-            return Result::err($envelope->errors);
+            return Result::err($envelope->errors, $envelope->errorId);
         }
 
         $items = Scalars::toArray($envelope->response);
@@ -151,7 +151,7 @@ final readonly class Fixtures extends AbstractResource
         $envelope = $this->transport->get('/fixtures/rounds', $query);
 
         if ($envelope->hasErrors()) {
-            return Result::err($envelope->errors);
+            return Result::err($envelope->errors, $envelope->errorId);
         }
 
         $items = Scalars::toArray($envelope->response);
@@ -181,7 +181,7 @@ final readonly class Fixtures extends AbstractResource
         $envelope = $this->transport->get('/fixtures/lineups', $query);
 
         if ($envelope->hasErrors()) {
-            return Result::err($envelope->errors);
+            return Result::err($envelope->errors, $envelope->errorId);
         }
 
         $items = Scalars::toArray($envelope->response);
@@ -213,7 +213,7 @@ final readonly class Fixtures extends AbstractResource
         $envelope = $this->transport->get('/fixtures/statistics', $query);
 
         if ($envelope->hasErrors()) {
-            return Result::err($envelope->errors);
+            return Result::err($envelope->errors, $envelope->errorId);
         }
 
         $items = Scalars::toArray($envelope->response);
@@ -239,7 +239,7 @@ final readonly class Fixtures extends AbstractResource
         $envelope = $this->transport->get('/fixtures/players', $query);
 
         if ($envelope->hasErrors()) {
-            return Result::err($envelope->errors);
+            return Result::err($envelope->errors, $envelope->errorId);
         }
 
         $items = Scalars::toArray($envelope->response);
@@ -260,7 +260,7 @@ final readonly class Fixtures extends AbstractResource
         $envelope = $this->transport->get($path, $query);
 
         if ($envelope->hasErrors()) {
-            return Result::err($envelope->errors);
+            return Result::err($envelope->errors, $envelope->errorId);
         }
 
         $items = Scalars::toArray($envelope->response);
